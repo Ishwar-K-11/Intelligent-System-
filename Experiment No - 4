@@ -1,0 +1,149 @@
+# -----------------------------------------------------
+# Car Recommendation Expert System
+# Knowledge Base + Inference Engine
+# -----------------------------------------------------
+
+# Knowledge Base
+# Each car type has a list of features
+
+knowledge_base = {
+
+    "Hatchback": [
+        "low budget",
+        "fuel efficient",
+        "small family",
+        "easy parking"
+    ],
+
+    "Sedan": [
+        "medium budget",
+        "comfortable",
+        "long drive",
+        "large boot"
+    ],
+
+    "SUV": [
+        "high budget",
+        "large family",
+        "off road",
+        "more space"
+    ],
+
+    "Electric Car": [
+        "environment friendly",
+        "low running cost",
+        "city driving",
+        "home charging"
+    ],
+
+    "Luxury Car": [
+        "high budget",
+        "premium",
+        "comfortable",
+        "high performance"
+    ]
+}
+
+
+# -----------------------------------------------------
+# Inference Engine
+# -----------------------------------------------------
+
+def recommend_car(user_requirements):
+
+    possible_cars = {}
+
+    # Check every car type
+    for car, features in knowledge_base.items():
+
+        match_count = 0
+
+        # Check every feature
+        for feature in features:
+
+            if feature in user_requirements:
+                match_count += 1
+
+        # Store matching feature count
+        possible_cars[car] = match_count
+
+    # Find the car with maximum matches
+    recommendation = max(
+        possible_cars,
+        key=possible_cars.get
+    )
+
+    score = possible_cars[recommendation]
+
+    # If no feature matches
+    if score == 0:
+        return None
+
+    return recommendation, score
+
+
+# -----------------------------------------------------
+# Main Program
+# -----------------------------------------------------
+
+print("===================================")
+print("   CAR RECOMMENDATION EXPERT SYSTEM")
+print("===================================")
+
+
+# Display available requirements
+print("\nAvailable Requirements:")
+
+all_features = set()
+
+for features in knowledge_base.values():
+    all_features.update(features)
+
+for feature in sorted(all_features):
+    print("-", feature)
+
+
+# Ask user for requirements
+print("\nEnter your requirements separated by commas")
+
+user_input = input("Requirements: ")
+
+
+# Convert input into a list
+user_requirements = [
+    requirement.strip().lower()
+    for requirement in user_input.split(",")
+]
+
+
+# -----------------------------------------------------
+# Check minimum 3 requirements
+# -----------------------------------------------------
+
+if len(user_requirements) < 3:
+
+    print("\nPlease enter at least 3 requirements.")
+
+else:
+
+    # Call recommendation function
+    result = recommend_car(user_requirements)
+
+    print("\n---------- Recommendation ----------")
+
+    if result is None:
+
+        print("No suitable car found.")
+
+    else:
+
+        car, score = result
+
+        print("Recommended Car :", car)
+        print("Matching Requirements:", score)
+
+    print("------------------------------------")
+
+
+print("\nNote: This is an educational expert system")
+print("and should not be considered professional car-buying advice.")
