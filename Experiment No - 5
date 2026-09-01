@@ -1,0 +1,235 @@
+# =========================================================
+#        GOVERNMENT SCHEME ELIGIBILITY CHECKER
+#                 Advanced Version
+# =========================================================
+
+# -------------------- Scheme Details ---------------------
+
+SCHEME_NAME = "Government Welfare Scheme"
+INCOME_LIMIT = 300000
+MINIMUM_AGE = 18
+
+ELIGIBLE_REGIONS = [
+    "Maharashtra",
+    "Karnataka",
+    "Gujarat",
+    "Goa"
+]
+
+EDUCATION_LEVELS = [
+    "High School",
+    "Diploma",
+    "Graduate",
+    "Post Graduate",
+    "PhD"
+]
+
+
+# -------------------- Helper Functions -------------------
+
+def get_valid_name():
+    while True:
+        name = input("Enter Applicant Name: ").strip()
+
+        if name.replace(" ", "").isalpha():
+            return name.title()
+
+        print("Invalid name. Please enter letters only.")
+
+
+def get_valid_age():
+    while True:
+        try:
+            age = int(input("Enter Age: "))
+
+            if 0 < age <= 120:
+                return age
+
+            print("Please enter a valid age between 1 and 120.")
+
+        except ValueError:
+            print("Invalid input. Please enter a whole number.")
+
+
+def get_valid_income():
+    while True:
+        try:
+            income = float(input("Enter Annual Income (Rs.): "))
+
+            if income >= 0:
+                return income
+
+            print("Income cannot be negative.")
+
+        except ValueError:
+            print("Invalid input. Please enter a valid amount.")
+
+
+def get_valid_region():
+    while True:
+        region = input("Enter Region/State: ").strip()
+
+        for valid_region in ELIGIBLE_REGIONS:
+            if region.lower() == valid_region.lower():
+                return valid_region
+
+        print("\nInvalid region.")
+        print("Eligible regions are:")
+
+        for region_name in ELIGIBLE_REGIONS:
+            print("-", region_name)
+
+
+def get_valid_education():
+    while True:
+        education = input("Enter Highest Qualification: ").strip()
+
+        for level in EDUCATION_LEVELS:
+            if education.lower() == level.lower():
+                return level
+
+        print("\nInvalid qualification.")
+        print("Accepted qualifications are:")
+
+        for level in EDUCATION_LEVELS:
+            print("-", level)
+
+
+# -------------------- Eligibility Logic ------------------
+
+def check_eligibility(age, income, region, education):
+
+    age_ok = age >= MINIMUM_AGE
+    income_ok = income <= INCOME_LIMIT
+    region_ok = region in ELIGIBLE_REGIONS
+    education_ok = education in EDUCATION_LEVELS
+
+    failed_conditions = []
+
+    if not age_ok:
+        failed_conditions.append(
+            f"Applicant must be at least {MINIMUM_AGE} years old."
+        )
+
+    if not income_ok:
+        failed_conditions.append(
+            f"Annual income must not exceed Rs. {INCOME_LIMIT:,.2f}."
+        )
+
+    if not region_ok:
+        failed_conditions.append(
+            "Applicant's region is not included in the eligible regions."
+        )
+
+    if not education_ok:
+        failed_conditions.append(
+            "Applicant's educational qualification is not accepted."
+        )
+
+    # Fully eligible
+    if age_ok and income_ok and region_ok and education_ok:
+        return "ELIGIBLE", failed_conditions
+
+    # Conditional eligibility
+    elif age_ok and education_ok and (income_ok or region_ok):
+        return "CONDITIONALLY ELIGIBLE", failed_conditions
+
+    # Not eligible
+    else:
+        return "NOT ELIGIBLE", failed_conditions
+
+
+# -------------------- Display Functions ------------------
+
+def display_eligibility_result(status, reasons):
+
+    print("\n" + "=" * 55)
+    print("                 ELIGIBILITY RESULT")
+    print("=" * 55)
+
+    if status == "ELIGIBLE":
+        print("\nResult: ELIGIBLE")
+        print("Congratulations! You satisfy all eligibility criteria.")
+
+    elif status == "CONDITIONALLY ELIGIBLE":
+        print("\nResult: CONDITIONALLY ELIGIBLE")
+        print("Your application requires further verification.")
+
+        if reasons:
+            print("\nConditions requiring verification:")
+            for reason in reasons:
+                print("-", reason)
+
+    else:
+        print("\nResult: NOT ELIGIBLE")
+        print("You do not currently satisfy the eligibility criteria.")
+
+        if reasons:
+            print("\nReasons:")
+            for reason in reasons:
+                print("-", reason)
+
+
+def display_applicant_summary(applicant):
+
+    print("\n" + "=" * 55)
+    print("              APPLICANT DETAILS")
+    print("=" * 55)
+
+    print(f"Name        : {applicant['name']}")
+    print(f"Age         : {applicant['age']}")
+    print(f"Income      : Rs. {applicant['income']:,.2f}")
+    print(f"Region      : {applicant['region']}")
+    print(f"Education   : {applicant['education']}")
+    print(f"Scheme      : {SCHEME_NAME}")
+    print(f"Status      : {applicant['status']}")
+
+    print("=" * 55)
+
+
+# -------------------- Main Program -----------------------
+
+def main():
+
+    print("=" * 55)
+    print("       GOVERNMENT SCHEME ELIGIBILITY CHECKER")
+    print("=" * 55)
+
+    print("\nPlease enter the following information:\n")
+
+    # Collect applicant information
+    name = get_valid_name()
+    age = get_valid_age()
+    income = get_valid_income()
+    region = get_valid_region()
+    education = get_valid_education()
+
+    # Check eligibility
+    status, reasons = check_eligibility(
+        age,
+        income,
+        region,
+        education
+    )
+
+    # Store applicant information
+    applicant = {
+        "name": name,
+        "age": age,
+        "income": income,
+        "region": region,
+        "education": education,
+        "status": status
+    }
+
+    # Display result
+    display_eligibility_result(status, reasons)
+
+    # Display summary
+    display_applicant_summary(applicant)
+
+
+# -------------------- Program Start ----------------------
+
+if __name__ == "__main__":
+    main()
